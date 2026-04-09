@@ -34,21 +34,30 @@ export default {
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
-          request.post('/user/login', this.form).then(res => {
+          // 调用你封装好的登录 API
+          request.post('/user/login', this.loginForm).then(res => {
             if (res.code === 200) {
-              this.$message.success("登录成功！");
-              // 存储 Token 和用户信息
-              localStorage.setItem("token", res.data.token);
-              localStorage.setItem("adminUser", JSON.stringify(res.data.user));
-              // 跳转到主框架页面
-              this.$router.push('/home'); 
-            } else {
-              this.$message.error(res.msg);
+              const { token, user } = res.data;
+          
+            // 🌟 权限哨兵：严格限制只有管理员能登录后台
+            if (user.role !== 3) {
+              this.$message.error('对不起，您不是管理员，无权访问后台系统！');
+              return;
             }
-          })
-        }
-      })
-    }
+
+            // 存储 Token 和 用户信息
+            localStorage.setItem('admin_token', token);
+            localStorage.setItem('admin_user', JSON.stringify(user));
+
+            this.$message.success('欢迎回来，超级管理员！');
+            this.$router.push('/dashboard'); // 跳转到后台首页
+          } else {
+            this.$message.error(res.msg);
+          }
+        });
+      }
+    });
+  }
   }
 }
 </script>
