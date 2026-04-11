@@ -18,7 +18,8 @@ const routes = [
     redirect: '/home/audit',
     children: [
       { path: 'audit', component: ProductAudit },
-      { path: 'order', component: OrderManage }
+      { path: 'order', component: OrderManage },
+      { path: 'dashboard', component: () => import('../views/Dashboard.vue') }
     ]
   }
 ]
