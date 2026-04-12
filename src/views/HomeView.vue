@@ -10,6 +10,10 @@
           <i class="el-icon-s-data"></i><span slot="title">数据可视化大屏</span>
         </el-menu-item>
 
+        <el-menu-item index="/home/apply">
+          <i class="el-icon-user-solid"></i><span slot="title">入驻资质审批</span>
+        </el-menu-item>
+
         <el-menu-item index="/home/audit">
           <i class="el-icon-s-check"></i><span slot="title">商品上架审核</span>
         </el-menu-item>
@@ -57,10 +61,9 @@ export default {
     return { adminName: '管理员' }
   },
   created() {
-    // 🌟 修复：必须与 LoginView.vue 中存入的名称 'admin_user' 保持绝对一致！
+    // 从缓存读取管理员信息
     let userStr = localStorage.getItem("admin_user");
     if (userStr) {
-      // 尝试获取真实姓名，如果没有则显示用户名
       let userObj = JSON.parse(userStr);
       this.adminName = userObj.realName || userObj.username || '管理员';
     }
@@ -68,7 +71,6 @@ export default {
   methods: {
     logout() {
       this.$confirm('确定要退出系统吗?', '提示', { type: 'warning' }).then(() => {
-        // 彻底清空所有缓存，防止安全隐患
         localStorage.clear();
         this.$router.push('/login');
         this.$message.success("已安全退出");
@@ -83,7 +85,7 @@ export default {
 .aside { background-color: #304156; box-shadow: 2px 0 6px rgba(0,21,41,.35); z-index: 10; }
 .logo-box { height: 60px; line-height: 60px; text-align: center; color: #fff; font-size: 18px; font-weight: bold; background-color: #2b3643; }
 .el-menu { border-right: none; }
-.header { background-color: #fff; line-height: 60px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 4px rgba(0, 21, 41, .08); }
+.header { background-color: #fff; line-height: 60px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 4px rgba(0, 21, 41, .08); padding: 0 20px; }
 .user-dropdown { cursor: pointer; display: flex; align-items: center; }
-.main-content { padding: 20px; background-color: #f0f2f5; } /* 加了一点浅灰背景，让里面的白色卡片更立体 */
+.main-content { padding: 20px; background-color: #f0f2f5; }
 </style>
