@@ -19,7 +19,8 @@ const routes = [
     children: [
       { path: 'audit', component: ProductAudit },
       { path: 'order', component: OrderManage },
-      { path: 'dashboard', component: () => import('../views/Dashboard.vue') }
+      { path: 'dashboard', component: () => import('../views/DataDashboard.vue') },
+      { path: 'history', component: () => import('../views/AuditHistory.vue') }
     ]
   }
 ]

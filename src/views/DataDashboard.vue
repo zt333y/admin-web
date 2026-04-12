@@ -46,17 +46,17 @@ export default {
     this.fetchData()
   },
   methods: {
-    fetchData() {
-      request.get('/admin/stats').then(res => {
+fetchData() {
+      // 🌟 核心修复：添加 /api 前缀，对齐后端的 @RequestMapping("/api/admin")
+      request.get('/api/admin/stats').then(res => {
         if (res.code === 200) {
           const data = res.data
-          // 更新卡片数字
+          // 更新卡片数字逻辑保持不变
           this.cards[0].value = '￥' + data.totalSales
           this.cards[1].value = data.totalOrders
           this.cards[2].value = data.totalProducts
           this.cards[3].value = data.totalUsers
           
-          // 渲染图表
           this.renderLineChart(data.weekDate, data.weekSales)
           this.renderPieChart(data.categoryData)
         }
