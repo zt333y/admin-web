@@ -18,6 +18,11 @@
           <i class="el-icon-s-order"></i><span slot="title">全平台订单管理</span>
         </el-menu-item>
 
+        <el-menu-item index="/home/review">
+          <i class="el-icon-chat-dot-round"></i>
+          <span slot="title">评价管理</span>
+        </el-menu-item>
+
         <el-menu-item index="/home/history">
           <i class="el-icon-notebook-2"></i><span slot="title">审核历史日志</span>
         </el-menu-item>

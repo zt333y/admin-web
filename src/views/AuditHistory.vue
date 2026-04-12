@@ -27,6 +27,9 @@
 </template>
 
 <script>
+// 🌟 核心修复 1：必须手动引入你封装好的 request.js
+import request from '@/utils/request'
+
 export default {
   data() {
     return { 
@@ -39,12 +42,21 @@ export default {
   },
   methods: {
     loadHistory() {
+      // 开启转圈
       this.loading = true;
-      // 🌟 使用更严谨的请求链
-      this.$request.get('/api/admin/audit/history')
+      
+      // 🌟 核心修复 2：使用引入的 request，而不是未定义的 this.$request
+      request.get('/api/admin/audit/history')
         .then(res => {
           if (res && res.code === 200) {
-            this.historyList = res.data;
+            // 🌟 核心修复 3：做一下数据字段兼容，防止 MyBatis 下划线转驼峰导致数据无法显示
+            this.historyList = res.data.map(item => ({
+              ...item,
+              create_time: item.create_time || item.createTime,
+              admin_name: item.admin_name || item.adminName,
+              action_type: item.action_type || item.actionType,
+              target_id: item.target_id || item.targetId
+            }));
           } else {
             this.$message.error(res ? res.msg : "获取历史记录失败");
           }
@@ -54,7 +66,7 @@ export default {
           this.$message.error("网络异常，请检查后端服务");
         })
         .finally(() => {
-          // 🌟 无论成功还是失败，最后都必须关掉转圈
+          // 无论成功还是失败，最后强制关掉转圈！
           this.loading = false; 
         });
     }
