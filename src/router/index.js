@@ -7,6 +7,7 @@ import ProductAudit from '../views/ProductAudit.vue'
 import OrderManage from '../views/OrderManage.vue'
 // 🌟 新增：引入评价管理组件
 import ReviewManage from '../views/ReviewManage.vue'
+import ApplyAudit from '../views/ApplyAudit.vue'
 
 Vue.use(VueRouter)
 
@@ -17,21 +18,20 @@ const routes = [
   { 
     path: '/home', 
     component: HomeView, 
-    redirect: '/home/audit',
+    redirect: '/home/dashboard', // 修改默认跳转到大屏
     children: [
+      { path: 'dashboard', component: () => import('../views/DataDashboard.vue') },
+      // 🌟 核心：添加申请审批路由
+      { path: 'apply', name: 'ApplyAudit', component: ApplyAudit },
       { path: 'audit', component: ProductAudit },
       { path: 'order', component: OrderManage },
-      // 🌟 核心：注册评价管理路由，路径为 /home/review
       { path: 'review', component: ReviewManage }, 
-      { path: 'dashboard', component: () => import('../views/DataDashboard.vue') },
       { path: 'history', component: () => import('../views/AuditHistory.vue') }
     ]
   }
 ]
 
-const router = new VueRouter({
-  routes
-})
+const router = new VueRouter({ routes })
 
 /**
  * 🌟 核心：全局前置路由守卫 (建立权限“护城河”)
