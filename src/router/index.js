@@ -26,7 +26,13 @@ const routes = [
       { path: 'audit', component: ProductAudit },
       { path: 'order', component: OrderManage },
       { path: 'review', component: ReviewManage }, 
-      { path: 'history', component: () => import('../views/AuditHistory.vue') }
+      { path: 'history', component: () => import('../views/AuditHistory.vue') },
+      {
+        path: 'notice',
+        name: 'NoticeManage',
+        component: () => import('../views/NoticeManage.vue'),
+        meta: { title: '公告管理' }
+      }
     ]
   }
 ]

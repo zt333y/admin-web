@@ -27,6 +27,11 @@
           <span slot="title">评价管理</span>
         </el-menu-item>
 
+        <el-menu-item index="/home/ notice">
+          <i class="el-icon-message-solid"></i>
+          <span slot="title">公告管理</span>
+        </el-menu-item>
+
         <el-menu-item index="/home/history">
           <i class="el-icon-notebook-2"></i><span slot="title">审核历史日志</span>
         </el-menu-item>
