@@ -27,7 +27,7 @@ const routes = [
       { path: 'order', component: OrderManage },
       { path: 'review', component: ReviewManage }, 
       { path: 'history', component: () => import('../views/AuditHistory.vue') },
-      {
+    {
         path: 'notice',
         name: 'NoticeManage',
         component: () => import('../views/NoticeManage.vue'),
