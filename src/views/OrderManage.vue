@@ -6,9 +6,9 @@
     </div>
     
     <el-table :data="orderList" stripe style="width: 100%" v-loading="loading" border>
-      <el-table-column prop="orderNo" label="订单流水号" width="280"></el-table-column>
+      <el-table-column prop="orderNo" label="订单流水号" width="280" align="center"></el-table-column>
       
-      <el-table-column prop="createTime" label="下单时间" width="180">
+      <el-table-column prop="createTime" label="下单时间" width="180" align="center">
         <template slot-scope="scope">
           <i class="el-icon-time"></i> {{ scope.row.createTime || scope.row.create_time }}
         </template>
@@ -21,6 +21,16 @@
           </span>
         </template>
       </el-table-column>
+
+      <el-table-column label="配送/收货地址" min-width="250">
+        <template slot-scope="scope">
+          <div v-if="scope.row.address" style="line-height: 1.5;">
+             <i class="el-icon-location-outline" style="color: #409EFF;"></i> 
+             <span style="margin-left: 5px;">{{ scope.row.address }}</span>
+          </div>
+          <el-tag v-else type="danger" size="small" effect="plain">未填写地址</el-tag>
+        </template>
+      </el-table-column>
       
       <el-table-column label="当前状态" width="120" align="center">
         <template slot-scope="scope">
@@ -31,7 +41,7 @@
         </template>
       </el-table-column>
       
-      <el-table-column label="调度操作" align="center">
+      <el-table-column label="调度操作" align="center" width="150">
         <template slot-scope="scope">
           <el-button
             v-if="scope.row.status === 0"
@@ -62,7 +72,6 @@ export default {
     this.loadOrders()
   },
   methods: {
-    // 1. 获取所有订单
     loadOrders() {
       this.loading = true;
       request.get('/api/admin/order/list')
@@ -82,18 +91,16 @@ export default {
         });
     },
     
-    // 2. 触发发货动作
     handleShip(orderId) {
       this.$confirm('确认将该订单打包并标记为已发货吗？', '发货提示', {
         confirmButtonText: '确认发货',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        // 调用你在 AdminController 里写的发货接口
         request.post(`/api/admin/order/ship?orderId=${orderId}`).then(res => {
           if (res && res.code === 200) {
             this.$message.success('🎉 发货成功！物流信息已更新');
-            this.loadOrders(); // 重新拉取数据，刷新页面状态
+            this.loadOrders(); 
           } else {
             this.$message.error(res ? res.msg : '发货失败');
           }
