@@ -82,22 +82,20 @@
 
 <script>
 import request from '@/utils/request'
-import * as echarts from 'echarts' // 引入 ECharts
+import * as echarts from 'echarts' 
 
 export default {
   data() {
     return {
       loading: false,
-      stats: {}, // 核心统计数据
-      latestReviews: [], // 最新评价列表
+      stats: {}, 
+      latestReviews: [], 
       lineChartInstance: null,
       pieChartInstance: null
     }
   },
   mounted() {
-    // 页面加载完毕后，拉取数据并初始化图表
     this.loadDashboardData();
-    // 监听窗口大小变化，让图表自适应缩放
     window.addEventListener('resize', this.resizeCharts);
   },
   beforeDestroy() {
@@ -109,26 +107,23 @@ export default {
     loadDashboardData() {
       this.loading = true;
       
-      // 1. 获取统计数据 (我们在 AdminService 里写好的真实数据接口)
       request.get('/api/admin/stats').then(res => {
         if (res.code === 200) {
           this.stats = res.data;
-          this.initLineChart(); // 数据拿到了，画折线图
-          this.initPieChart();  // 画饼图
+          this.initLineChart(); 
+          this.initPieChart();  
         }
       });
 
-      // 2. 获取最新评价数据 (截取前5条展示在大屏上)
       request.get('/api/review/list').then(res => {
         if (res.code === 200 && res.data) {
-          this.latestReviews = res.data.slice(0, 5); // 只取前5条最新评价
+          this.latestReviews = res.data.slice(0, 5); 
         }
       }).finally(() => {
         this.loading = false;
       });
     },
 
-    // 绘制折线图
     initLineChart() {
       const chartDom = document.getElementById('lineChart');
       if (!chartDom) return;
@@ -154,7 +149,6 @@ export default {
       this.lineChartInstance.setOption(option);
     },
 
-    // 绘制饼图
     initPieChart() {
       const chartDom = document.getElementById('pieChart');
       if (!chartDom) return;
@@ -166,21 +160,29 @@ export default {
         series: [{
           type: 'pie',
           radius: ['40%', '70%'],
-          avoidLabelOverlap: false,
+          avoidLabelOverlap: true, // 开启防重叠
           itemStyle: { borderRadius: 10, borderColor: '#fff', borderWidth: 2 },
+          // 🌟 核心修复：文字过长格式化截断
+          label: {
+            formatter: function(params) {
+              let name = params.name;
+              if (name.length > 4) {
+                name = name.substring(0, 4) + '..';
+              }
+              return name + '\n' + params.percent + '%';
+            }
+          },
           data: this.stats.categoryData || []
         }]
       };
       this.pieChartInstance.setOption(option);
     },
 
-    // 图表自适应
     resizeCharts() {
       if (this.lineChartInstance) this.lineChartInstance.resize();
       if (this.pieChartInstance) this.pieChartInstance.resize();
     },
 
-    // 时间格式化补零
     formatDate(time) {
       if (!time) return '';
       let date = new Date(time);
@@ -198,7 +200,6 @@ export default {
 .dashboard-container {
   padding: 10px;
 }
-/* 顶部 KPI 卡片样式 */
 .data-card {
   color: #fff;
   border: none;
@@ -224,13 +225,11 @@ export default {
   font-weight: bold;
 }
 
-/* 颜色定义 */
 .bg-blue { background: linear-gradient(135deg, #409EFF, #73b3f3); }
 .bg-green { background: linear-gradient(135deg, #67C23A, #85ce61); }
 .bg-orange { background: linear-gradient(135deg, #E6A23C, #f3d19e); }
 .bg-purple { background: linear-gradient(135deg, #9C27B0, #d05ce3); }
 
-/* 评价列表样式 */
 .review-board {
   max-height: 300px;
   overflow-y: auto;

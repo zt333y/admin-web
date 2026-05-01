@@ -14,16 +14,20 @@
             <el-tag size="medium">{{ scope.row.category }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="price" label="申请定价 (元)" width="120" align="center">
+        
+        <el-table-column prop="price" label="申请定价" width="140" align="center">
           <template slot-scope="scope">
             <span style="color: #F56C6C; font-weight: bold; font-size: 15px;">¥ {{ scope.row.price }}</span>
+            <span style="color: #606266; font-size: 13px;"> / {{ scope.row.unit }}</span>
           </template>
         </el-table-column>
+        
         <el-table-column prop="stock" label="库存量" width="100" align="center">
           <template slot-scope="scope">
             {{ scope.row.stock }} {{ scope.row.unit }}
           </template>
         </el-table-column>
+        
         <el-table-column prop="description" label="详情描述"></el-table-column>
         
         <el-table-column label="审核操作" width="200" align="center" fixed="right">
@@ -44,12 +48,11 @@ export default {
   data() {
     return {
       tableData: [],
-      adminId: 1, // 默认给个1，防止没拿到缓存时报错
-      loading: false // 🌟 控制加载动画的开关
+      adminId: 1, 
+      loading: false 
     }
   },
   created() {
-    // 🌟 兼容性修复：同时兼容 admin_user 和 adminUser
     let userStr = localStorage.getItem("admin_user") || localStorage.getItem("adminUser");
     if (userStr) {
       try {
@@ -61,9 +64,8 @@ export default {
     this.loadData();
   },
   methods: {
-    // 拉取待审核商品列表
     loadData() {
-      this.loading = true; // 开始转圈
+      this.loading = true; 
       request.get('/api/admin/product/pending').then(res => {
         if (res && res.code === 200) {
           this.tableData = res.data || [];
@@ -74,11 +76,10 @@ export default {
         console.error("加载数据异常", err);
         this.$message.error("网络异常，请检查后端服务");
       }).finally(() => {
-        this.loading = false; // 无论成功失败，都停止转圈
+        this.loading = false; 
       });
     },
     
-    // 提交审核结果
     doAudit(productId, status) {
       let actionName = status === 1 ? '通过并上架' : '驳回';
       this.$confirm(`确认要 ${actionName} 该商品吗？`, '操作确认', {
@@ -87,7 +88,6 @@ export default {
         cancelButtonText: '取消'
       }).then(() => {
         
-        // 开启全屏遮罩防连点
         const loading = this.$loading({
           lock: true,
           text: '正在处理中...',
@@ -98,7 +98,7 @@ export default {
         request.post(`/api/admin/product/audit?productId=${productId}&status=${status}&adminId=${this.adminId}`).then(res => {
           if (res && res.code === 200) {
             this.$message.success(`🎉 操作成功：商品已${actionName}`);
-            this.loadData(); // 成功后刷新表格
+            this.loadData(); 
           } else {
             this.$message.error(res ? res.msg : "处理失败");
           }
@@ -106,7 +106,7 @@ export default {
           console.error("审核异常", err);
           this.$message.error("网络异常，请重新操作");
         }).finally(() => {
-          loading.close(); // 关掉全屏遮罩
+          loading.close(); 
         });
         
       }).catch(() => {
@@ -118,7 +118,6 @@ export default {
 </script>
 
 <style scoped>
-/* 让卡片头部更好看 */
 .clearfix {
   display: flex;
   justify-content: space-between;

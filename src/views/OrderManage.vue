@@ -6,11 +6,29 @@
     </div>
     
     <el-table :data="orderList" stripe style="width: 100%" v-loading="loading" border>
-      <el-table-column prop="orderNo" label="订单流水号" width="280" align="center"></el-table-column>
+      
+      <el-table-column type="expand">
+        <template slot-scope="props">
+          <div style="padding: 15px 30px; background-color: #fafafa; border-radius: 4px;">
+            <p style="margin: 0 0 10px 0; font-weight: bold; color: #606266;">📦 包含商品明细：</p>
+            <div v-if="props.row.items && props.row.items.length > 0">
+              <div v-for="item in props.row.items" :key="item.id" style="margin-bottom: 8px;">
+                <el-tag size="small" type="info">{{ item.productName }}</el-tag>
+                <span style="margin-left: 15px; color: #606266;">单价: ￥{{ item.productPrice }}</span>
+                <span style="margin-left: 15px; color: #606266;">数量: x{{ item.quantity }}</span>
+                <span style="margin-left: 15px; color: #f56c6c; font-weight: bold;">小计: ￥{{ item.totalPrice }}</span>
+              </div>
+            </div>
+            <div v-else style="color: #999;">该订单无商品明细数据</div>
+          </div>
+        </template>
+      </el-table-column>
+
+      <el-table-column prop="orderNo" label="订单流水号" width="230" align="center"></el-table-column>
       
       <el-table-column prop="createTime" label="下单时间" width="180" align="center">
         <template slot-scope="scope">
-          <i class="el-icon-time"></i> {{ scope.row.createTime || scope.row.create_time }}
+          <i class="el-icon-time"></i> {{ (scope.row.createTime || scope.row.create_time || '').replace('T', ' ') }}
         </template>
       </el-table-column>
       
@@ -32,12 +50,13 @@
         </template>
       </el-table-column>
       
-      <el-table-column label="当前状态" width="120" align="center">
+      <el-table-column label="当前状态" width="130" align="center">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.status === 0" type="warning" effect="dark" size="medium">⏳ 待发货</el-tag>
           <el-tag v-else-if="scope.row.status === 1" type="primary" effect="dark" size="medium">🚚 已发货</el-tag>
-          <el-tag v-else-if="scope.row.status === 2" type="success" effect="dark" size="medium">✅ 已完成</el-tag>
-          <el-tag v-else type="info" size="medium">未知状态</el-tag>
+          <el-tag v-else-if="scope.row.status === 2" type="success" effect="dark" size="medium">📦 已到货/待评</el-tag>
+          <el-tag v-else-if="scope.row.status === 3" type="info" effect="dark" size="medium">✅ 已完成</el-tag>
+          <el-tag v-else type="info" size="medium">未知状态 ({{scope.row.status}})</el-tag>
         </template>
       </el-table-column>
       
@@ -124,5 +143,9 @@ export default {
   font-weight: bold;
   font-size: 16px;
   color: #304156;
+}
+/* 展开行的内部样式调整，让明细更好看 */
+.el-table__expanded-cell {
+  padding: 20px 50px !important;
 }
 </style>
