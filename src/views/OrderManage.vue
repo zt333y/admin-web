@@ -54,16 +54,16 @@
 
       <el-table-column label="当前状态" width="130" align="center">
         <template slot-scope="scope">
-          <el-tag v-if="scope.row.status === 0" type="warning" effect="dark">⏳ 待发货</el-tag>
-          <el-tag v-else-if="scope.row.status === 1" type="primary" effect="dark">🚚 运输中</el-tag>
-          <el-tag v-else-if="scope.row.status === 4" color="#9C27B0" style="color: white; border: none;" effect="dark">📦 团长待领</el-tag>
-          <el-tag v-else-if="scope.row.status === 2" type="success" effect="dark">✅ 已提货</el-tag>
-          <el-tag v-else-if="scope.row.status === 3" type="info" effect="dark">🎉 订单结束</el-tag>
+          <el-tag v-if="scope.row.status === 0" type="warning" effect="dark">待发货</el-tag>
+          <el-tag v-else-if="scope.row.status === 1" type="primary" effect="dark">运输中</el-tag>
+          <el-tag v-else-if="scope.row.status === 4" color="#9C27B0" style="color: white; border: none;" effect="dark">团长待领</el-tag>
+          <el-tag v-else-if="scope.row.status === 2" type="success" effect="dark">已提货</el-tag>
+          <el-tag v-else-if="scope.row.status === 3" type="info" effect="dark">订单结束</el-tag>
           
-          <el-tag v-else-if="scope.row.status === 5" type="danger" effect="plain">🔄 售后待审</el-tag>
-          <el-tag v-else-if="scope.row.status === 6" type="danger" effect="dark">🔙 待退给团长</el-tag>
-          <el-tag v-else-if="scope.row.status === 7" type="info" effect="plain">✔️ 售后完成</el-tag>
-          <el-tag v-else-if="scope.row.status === 8" type="info" effect="dark">❌ 售后驳回</el-tag>
+          <el-tag v-else-if="scope.row.status === 5" type="danger" effect="plain">售后待审</el-tag>
+          <el-tag v-else-if="scope.row.status === 6" type="danger" effect="dark">待退给团长</el-tag>
+          <el-tag v-else-if="scope.row.status === 7" type="info" effect="plain">售后完成</el-tag>
+          <el-tag v-else-if="scope.row.status === 8" type="info" effect="dark">售后驳回</el-tag>
           
           <el-tag v-else type="info">{{scope.row.status}}</el-tag>
         </template>
@@ -138,7 +138,7 @@ export default {
       });
     },
 
-    // 🌟 新增：处理售后申请审批
+ // 🌟 修复：处理售后申请审批
     handleApprove(orderId, isAgree) {
       const actionText = isAgree ? '同意退货申请' : '拒绝售后申请';
       const type = isAgree ? 'success' : 'warning';
@@ -148,8 +148,9 @@ export default {
         cancelButtonText: '取消',
         type: type
       }).then(() => {
-        // 调用后端暴露的审批接口
-        request.post(`/api/admin/order/approveAfterSales?orderId=${orderId}&isAgree=${isAgree}`)
+        
+        // 🌟🌟🌟 核心修复：去掉了 /admin，真实的后端路径是 /api/order/approveAfterSales
+        request.post(`/api/order/approveAfterSales?orderId=${orderId}&isAgree=${isAgree}`)
           .then(res => {
             if (res && res.code === 200) {
               this.$message.success('审核操作已完成');
@@ -158,9 +159,10 @@ export default {
               this.$message.error(res.msg || '操作失败');
             }
           })
-          .catch(() => { // 🌟 修复2：去掉 err 变量
+          .catch(() => { 
             this.$message.error('请求失败，请检查网络');
           });
+          
       }).catch(() => {});
     }
   }

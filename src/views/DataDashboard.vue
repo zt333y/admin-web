@@ -5,7 +5,7 @@
         <el-card shadow="hover" class="data-card bg-blue">
           <div class="card-icon"><i class="el-icon-money"></i></div>
           <div class="card-info">
-            <div class="card-title">平台总销售额</div>
+            <div class="card-title">今日总销售额</div>
             <div class="card-value">¥ {{ stats.totalSales || 0 }}</div>
           </div>
         </el-card>
@@ -14,7 +14,7 @@
         <el-card shadow="hover" class="data-card bg-green">
           <div class="card-icon"><i class="el-icon-shopping-cart-full"></i></div>
           <div class="card-info">
-            <div class="card-title">累计订单量</div>
+            <div class="card-title">今日累计订单量</div>
             <div class="card-value">{{ stats.totalOrders || 0 }} 笔</div>
           </div>
         </el-card>
@@ -48,7 +48,7 @@
       </el-col>
       <el-col :span="9">
         <el-card shadow="hover">
-          <div slot="header"><span><i class="el-icon-pie-chart"></i> 农产品分类占比</span></div>
+          <div slot="header"><span><i class="el-icon-pie-chart"></i> 今日销售分类占比</span></div>
           <div id="pieChart" style="height: 350px;"></div>
         </el-card>
       </el-col>
@@ -160,9 +160,8 @@ export default {
         series: [{
           type: 'pie',
           radius: ['40%', '70%'],
-          avoidLabelOverlap: true, // 开启防重叠
+          avoidLabelOverlap: true,
           itemStyle: { borderRadius: 10, borderColor: '#fff', borderWidth: 2 },
-          // 🌟 核心修复：文字过长格式化截断
           label: {
             formatter: function(params) {
               let name = params.name;

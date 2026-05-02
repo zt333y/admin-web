@@ -1,6 +1,6 @@
 <template>
   <el-card shadow="never">
-    <div slot="header"><span><i class="el-icon-time"></i> 审核操作日志</span></div>
+    <div slot="header"><span><i class="el-icon-time"></i> 全平台审核与调度日志</span></div>
     
     <el-table :data="historyList" stripe style="width: 100%" v-loading="loading">
       
@@ -11,28 +11,45 @@
         </template>
       </el-table-column>
       
-      <el-table-column prop="admin_name" label="操作人" width="150">
+      <el-table-column prop="admin_name" label="操作人" width="130">
         <template slot-scope="scope">
-          <el-tag size="small">{{ scope.row.admin_name || '系统管理员' }}</el-tag>
+          <el-tag size="small" type="info"><i class="el-icon-user-solid"></i> {{ scope.row.admin_name || '系统管理员' }}</el-tag>
         </template>
       </el-table-column>
       
-      <el-table-column prop="action_type" label="动作" width="150">
+      <el-table-column prop="action_type" label="动作类别" width="160">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.action_type === 'AUDIT_PASS' ? 'success' : 'danger'" effect="dark">
-            {{ scope.row.action_type === 'AUDIT_PASS' ? '审核通过' : '审核拒绝' }}
-          </el-tag>
+          <el-tag v-if="scope.row.action_type === 'AUDIT_PASS'" type="success" effect="dark">商品入驻通过</el-tag>
+          <el-tag v-else-if="scope.row.action_type === 'AUDIT_REJECT'" type="danger" effect="dark">商品入驻驳回</el-tag>
+          <el-tag v-else-if="scope.row.action_type === 'AFTER_SALES_PASS'" type="warning" effect="dark">同意售后退货</el-tag>
+          <el-tag v-else-if="scope.row.action_type === 'AFTER_SALES_REJECT'" type="info" effect="dark">拒绝售后申请</el-tag>
+          <el-tag v-else type="primary" effect="plain">{{ scope.row.action_type }}</el-tag>
         </template>
       </el-table-column>
       
-      <el-table-column prop="target_id" label="目标商品ID" width="120" align="center"></el-table-column>
+      <el-table-column prop="target_id" label="目标单号/商品号" width="130" align="center"></el-table-column>
       
-      <el-table-column label="操作备注">
+      <el-table-column label="操作追踪详情">
         <template slot-scope="scope">
-          针对商品 ID 为 <span style="font-weight: bold; color: #409EFF;">{{ scope.row.target_id }}</span> 的发布申请进行了 
-          <span :style="{color: scope.row.action_type === 'AUDIT_PASS' ? '#67C23A' : '#F56C6C', fontWeight: 'bold'}">
-            {{ scope.row.action_type === 'AUDIT_PASS' ? '通过' : '驳回' }}
-          </span> 处理。
+          
+          <div v-if="scope.row.action_type === 'AUDIT_PASS' || scope.row.action_type === 'AUDIT_REJECT'">
+            针对农户发布的商品 (ID: <span style="font-weight: bold; color: #409EFF;">{{ scope.row.target_id }}</span>) 进行了 
+            <span :style="{color: scope.row.action_type === 'AUDIT_PASS' ? '#67C23A' : '#F56C6C', fontWeight: 'bold'}">
+              {{ scope.row.action_type === 'AUDIT_PASS' ? '通过' : '驳回' }}
+            </span> 处理。
+          </div>
+          
+          <div v-else-if="scope.row.action_type === 'AFTER_SALES_PASS' || scope.row.action_type === 'AFTER_SALES_REJECT'">
+             针对用户的售后申请单 (订单ID: <span style="font-weight: bold; color: #E6A23C;">{{ scope.row.target_id }}</span>) 进行了
+             <span :style="{color: scope.row.action_type === 'AFTER_SALES_PASS' ? '#E6A23C' : '#909399', fontWeight: 'bold'}">
+              {{ scope.row.action_type === 'AFTER_SALES_PASS' ? '同意退回团长' : '拒绝并打回' }}
+            </span> 处理。
+          </div>
+
+          <div v-else>
+             执行了底层业务操作，关联目标 ID：{{ scope.row.target_id }}
+          </div>
+          
         </template>
       </el-table-column>
     </el-table>

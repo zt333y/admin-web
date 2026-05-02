@@ -13,7 +13,7 @@
       <el-table-column label="申请角色" width="120" align="center">
         <template slot-scope="scope">
           <el-tag :type="scope.row.applyRole === 1 ? 'warning' : 'primary'" size="medium" effect="dark">
-            {{ scope.row.applyRole === 1 ? '🌾 农户' : '👨‍👩‍👧‍👦 团长' }}
+            {{ scope.row.applyRole === 1 ? '农户' : '团长' }}
           </el-tag>
         </template>
       </el-table-column>
